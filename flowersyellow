@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flor para Kass</title>
+    <style>
+        body {
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        canvas {
+            position: absolute;
+            background-color: black;
+        }
+
+        /* Estilo del texto animado */
+        .text {
+            position: absolute;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red;
+            animation: glow 2s infinite alternate, moveText 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red;
+            }
+            to {
+                text-shadow: 0 0 20px yellow, 0 0 30px orange, 0 0 40px red;
+            }
+        }
+
+        @keyframes moveText {
+            from {
+                transform: translateY(-10px);
+            }
+            to {
+                transform: translateY(10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="text" class="text">Te amo my Kass</div>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            document.getElementById("text").style.left = `${canvas.width / 2}px`;
+            document.getElementById("text").style.top = `${canvas.height / 2}px`;
+        }
+
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+
+        let angleOffset = 0; // Movimiento de los pétalos
+
+        function drawPetal(x, y, angle, scaleX, scaleY) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.scale(scaleX, scaleY);
+
+            let gradient = ctx.createLinearGradient(-80, 0, 150, 0);
+            gradient.addColorStop(0, "#FFD700"); // Amarillo oro
+            gradient.addColorStop(0.5, "#FFA500"); // Naranja fuerte
+            gradient.addColorStop(1, "#FF8C00"); // Naranja oscuro
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-50, -150, 50, -150, 0, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawFlower() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let centerX = canvas.width / 2;
+            let centerY = canvas.height / 2;
+
+            for (let i = 0; i < 12; i++) {
+                let angle = (i * Math.PI) / 6 + Math.sin(angleOffset) * 0.1;
+                drawPetal(centerX, centerY, angle, 2, 1.5);
+            }
+
+            // Centro de la flor
+            ctx.fillStyle = "#8B4513"; // Marrón
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 70, 0, Math.PI * 2);
+            ctx.fill();
+
+            angleOffset += 0.02; // Movimiento de los pétalos
+
+            requestAnimationFrame(drawFlower);
+        }
+
+        drawFlower();
+    </script>
+</body>
+</html>
